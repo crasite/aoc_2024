@@ -1,11 +1,11 @@
 use aoc2024::{
-    challenge::DAY19CHALLENGE,
-    day19::{part1, part2},
+    challenge::DAY2CHALLENGE,
+    day2::{part1, part2},
 };
 
 fn main() {
-    let rs = part1(DAY19CHALLENGE);
+    let rs = part1(DAY2CHALLENGE);
     println!("part 1 result is: {}", rs);
-    let rs = part2(DAY19CHALLENGE);
+    let rs = part2(DAY2CHALLENGE);
     println!("part 2 result is: {}", rs);
 }
