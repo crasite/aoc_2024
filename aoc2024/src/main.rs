@@ -1,5 +1,5 @@
 use aoc2024::{
-    challenge::DAY2CHALLENGE,
+    challenge::{DAY2CHALLENGE, DAY2TEST},
     day2::{part1, part2},
 };
 

@@ -1,55 +1,73 @@
 use itertools::Itertools;
 
 pub fn part1(input: &str) -> u64 {
-    let mut program = vec![];
-    for v in input.trim().split(',').map(|s| s.parse::<u64>().unwrap()) {
-        program.push(v);
-    }
-    run_program(&program, 12, 2)
-}
-pub fn part2(input: &str) -> u64 {
-    let mut program = vec![];
-    let target = 19690720;
-    for v in input.trim().split(',').map(|s| s.parse::<u64>().unwrap()) {
-        program.push(v);
-    }
-    for (i1, i2) in (0..100).cartesian_product(0..100) {
-        if run_program(&program, i1, i2) == target {
-            return 100 * i1 + i2;
+    let mut pass_rule = 0;
+    for line in input.lines() {
+        let report: Vec<i64> = line
+            .split_whitespace()
+            .map(|v| v.parse::<i64>().unwrap())
+            .collect();
+        if is_rule_safe(&report) {
+            pass_rule += 1
         }
     }
-    unreachable!()
+    pass_rule
+}
+pub fn part2(input: &str) -> i64 {
+    let mut pass_rule = 0;
+    for line in input.lines() {
+        let report: Vec<i64> = line
+            .split_whitespace()
+            .map(|v| v.parse::<i64>().unwrap())
+            .collect();
+        if is_rule_safe(&report) {
+            pass_rule += 1;
+            continue;
+        }
+        for i in 0..report.len() {
+            let mut damp_report = report.clone();
+            damp_report.remove(i);
+            if is_rule_safe(&damp_report) {
+                pass_rule += 1;
+                break;
+            }
+        }
+    }
+    pass_rule
 }
 
-fn run_program(program: &[u64], i1: u64, i2: u64) -> u64 {
-    let mut program = program.to_vec();
-    let mut pointer = 0;
-    program[1] = i1;
-    program[2] = i2;
-    while let Some((p, val)) = run_next_instruction(&program, pointer) {
-        program[p] = val;
-        pointer += 4;
+fn is_rule_safe(rule: &[i64]) -> bool {
+    let mut previous = rule[0];
+    let mut sort_order = None;
+    for n in rule[1..].iter() {
+        if sort_order.is_none() {
+            if &previous > n {
+                sort_order = Some(SortOrder::Desc);
+            } else if &previous < n {
+                sort_order = Some(SortOrder::Asc);
+            } else {
+                return false;
+            }
+        }
+        let order = sort_order.as_ref().unwrap();
+        match order {
+            SortOrder::Asc => {
+                if n - previous > 3 || n - previous <= 0 {
+                    return false;
+                }
+            }
+            SortOrder::Desc => {
+                if previous - n > 3 || previous - n <= 0 {
+                    return false;
+                }
+            }
+        }
+        previous = *n;
     }
-    program[0]
+    true
 }
 
-fn run_next_instruction(program: &[u64], pointer: usize) -> Option<(usize, u64)> {
-    match program[pointer] {
-        99 => None,
-        1 => {
-            let v1 = program[program[pointer + 1] as usize];
-            let v2 = program[program[pointer + 2] as usize];
-            let p = program[pointer + 3] as usize;
-            Some((p, v1 + v2))
-        }
-        2 => {
-            let v1 = program[program[pointer + 1] as usize];
-            let v2 = program[program[pointer + 2] as usize];
-            let p = program[pointer + 3] as usize;
-            Some((p, v1 * v2))
-        }
-        _ => {
-            unreachable!()
-        }
-    }
+enum SortOrder {
+    Asc,
+    Desc,
 }
