@@ -1,28 +1,43 @@
 use std::collections::{HashMap, HashSet};
 
 use nom::{
+    branch::alt,
     bytes::complete::{tag, take},
     character::complete::{multispace1, one_of, u64},
+    combinator::{opt, value},
     multi::separated_list1,
     IResult, Parser,
 };
 
-pub fn parse_mul(input: &str) -> IResult<&str, u64> {
-    let (input, _) = tag("mul(")(input)?;
-    let (input, u1) = u64(input)?;
-    let (input, _) = tag(",")(input)?;
-    let (input, u2) = u64(input)?;
-    let (input, _) = tag(")")(input)?;
-    Ok((input, u1 * u2))
+pub fn parse_mul(input: &str) -> IResult<&str, Option<u64>> {
+    let (input, Some(_)) = opt(tag("mul("))(input)? else {
+        return Ok((&input[1..], None));
+    };
+    let (input, Some(u1)) = opt(u64)(input)? else {
+        return Ok((input, None));
+    };
+    let (input, Some(_)) = opt(tag(","))(input)? else {
+        return Ok((input, None));
+    };
+    let (input, Some(u2)) = opt(u64)(input)? else {
+        return Ok((input, None));
+    };
+    let (input, Some(_)) = opt(tag(")"))(input)? else {
+        return Ok((input, None));
+    };
+    Ok((input, Some(u1 * u2)))
 }
 
-pub fn parse_do(input: &str) -> IResult<&str, ()> {
-    let (input, _) = tag("do()")(input)?;
-    Ok((input, ()))
-}
-pub fn parse_dont(input: &str) -> IResult<&str, ()> {
-    let (input, _) = tag("don't()")(input)?;
-    Ok((input, ()))
+pub fn parse_do_or_dont(input: &str) -> IResult<&str, Option<bool>> {
+    let (input, Some(_)) = opt(tag("do"))(input)? else {
+        return Ok((input, None));
+    };
+    let (input, Some(result)) =
+        opt(alt((value(false, tag("n't()")), value(true, tag("()")))))(input)?
+    else {
+        return Ok((input, None));
+    };
+    Ok((input, Some(result)))
 }
 
 #[cfg(test)]
@@ -32,6 +47,6 @@ mod tests {
     #[test]
     fn could_parse_mul() {
         let input = "mul(2,4)";
-        assert_eq!(parse_mul(input).unwrap().1, 8);
+        assert_eq!(parse_mul(input).unwrap().1, Some(8));
     }
 }
