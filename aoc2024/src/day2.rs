@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 pub fn part1(input: &str) -> u64 {
     let mut pass_rule = 0;
     for line in input.lines() {
@@ -41,12 +39,14 @@ fn is_rule_safe(rule: &[i64]) -> bool {
     let mut sort_order = None;
     for n in rule[1..].iter() {
         if sort_order.is_none() {
-            if &previous > n {
-                sort_order = Some(SortOrder::Desc);
-            } else if &previous < n {
-                sort_order = Some(SortOrder::Asc);
-            } else {
-                return false;
+            match n.cmp(&previous) {
+                std::cmp::Ordering::Less => {
+                    sort_order = Some(SortOrder::Desc);
+                }
+                std::cmp::Ordering::Equal => return false,
+                std::cmp::Ordering::Greater => {
+                    sort_order = Some(SortOrder::Asc);
+                }
             }
         }
         let order = sort_order.as_ref().unwrap();

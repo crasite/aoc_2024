@@ -1,12 +1,10 @@
-use std::collections::{HashMap, HashSet};
 
 use nom::{
     branch::alt,
-    bytes::complete::{tag, take},
-    character::complete::{multispace1, one_of, u64},
+    bytes::complete::tag,
+    character::complete::u64,
     combinator::{opt, value},
-    multi::separated_list1,
-    IResult, Parser,
+    IResult,
 };
 
 pub fn parse_mul(input: &str) -> IResult<&str, Option<u64>> {

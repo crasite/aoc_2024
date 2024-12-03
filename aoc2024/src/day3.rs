@@ -1,7 +1,3 @@
-use std::{
-    collections::{HashMap, HashSet},
-    hash::Hash,
-};
 
 use parser::{parse_do_or_dont, parse_mul};
 
