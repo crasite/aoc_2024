@@ -1,6 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
-use itertools::Itertools;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use winnow::{
     ascii::dec_uint,
     combinator::{repeat, separated},
@@ -22,26 +22,27 @@ pub fn part1(input: &str) -> u64 {
 }
 
 pub fn part2(input: &str) -> u64 {
-    let mut rs = 0;
     let mut input = input;
     let rules = parse_simple_rule_list(&mut input).unwrap();
     let combined_rules = CombinedRule::from_list(rules.into_iter());
     let update_list = parse_all_update(&mut input).unwrap();
-    for list in update_list.into_iter() {
-        if is_in_rule(&list.0, &combined_rules) {
-            continue;
-        };
-        let mut new_list: VecDeque<u64> = list.0.into();
-        while let Some(i) = is_in_rule_reason(new_list.make_contiguous(), &combined_rules) {
-            let pop_v = new_list.remove(i).unwrap();
-            new_list.push_front(pop_v);
-        }
-        if !is_in_rule(new_list.as_slices().0, &combined_rules) {
-            panic!("wow");
-        }
-        rs += new_list[new_list.len() / 2]
-    }
-    rs
+    update_list
+        .par_iter()
+        .fold_with(0, |acc, list| {
+            if is_in_rule(&list.0, &combined_rules) {
+                return acc;
+            };
+            let mut new_list: VecDeque<u64> = list.0.clone().into();
+            while let Some(i) = is_in_rule_reason(new_list.make_contiguous(), &combined_rules) {
+                let pop_v = new_list.remove(i).unwrap();
+                new_list.push_front(pop_v);
+            }
+            if !is_in_rule(new_list.as_slices().0, &combined_rules) {
+                panic!("wow");
+            }
+            acc + new_list[new_list.len() / 2]
+        })
+        .sum()
 }
 
 struct SimpleRule {
