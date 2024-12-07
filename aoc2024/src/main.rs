@@ -2,20 +2,20 @@
 use std::time::{Duration, Instant};
 
 use aoc2024::{
-    challenge::{DAY6CHALLENGE, DAY6TEST},
-    day6::{part1, part2},
+    challenge::{DAY7CHALLENGE, DAY7TEST},
+    day7::{part1, part2},
 };
 
 fn main() {
     let now = Instant::now();
-    let rs = part1(DAY6CHALLENGE);
+    let rs = part1(DAY7CHALLENGE);
     println!(
         "part 1 result is: {} in {}",
         rs,
         duration_to_string(now.elapsed())
     );
     let now = Instant::now();
-    let rs = part2(DAY6CHALLENGE);
+    let rs = part2(DAY7CHALLENGE);
     println!(
         "part 2 result is: {} in {}",
         rs,
