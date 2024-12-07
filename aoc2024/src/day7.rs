@@ -32,28 +32,28 @@ pub fn part2(input: &str) -> u64 {
 }
 
 fn is_target_posible(target: u64, current: u64, left: &[&str]) -> bool {
-    if current == target && left.is_empty() {
-        return true;
+    if left.is_empty() {
+        return current == target;
     }
-    if current > target || left.is_empty() {
+    if current > target {
         return false;
     }
     let (next, rest) = left.split_first().unwrap();
-    let next_value = next.parse::<u64>().unwrap();
+    let next_value: u64 = next.parse().unwrap();
     is_target_posible(target, current * next_value, rest)
         || is_target_posible(target, current + next_value, rest)
 }
 
 fn is_target_posible_2(target: u64, current: u64, left: &[&str]) -> bool {
-    if current == target && left.is_empty() {
-        return true;
+    if left.is_empty() {
+        return current == target;
     }
-    if current > target || left.is_empty() {
+    if current > target {
         return false;
     }
     let (next, rest) = left.split_first().unwrap();
-    let next_value = next.parse::<u64>().unwrap();
-    let pow = u64::pow(10, next.len() as u32);
+    let next_value: u64 = next.parse().unwrap();
+    let pow = 10u64.pow(next.len() as u32);
 
     is_target_posible_2(target, current * next_value, rest)
         || is_target_posible_2(target, current + next_value, rest)
@@ -61,7 +61,7 @@ fn is_target_posible_2(target: u64, current: u64, left: &[&str]) -> bool {
 }
 
 fn parse_single_line<'a>(input: &mut &'a str) -> PResult<(u64, Vec<&'a str>)> {
-    let expected_output = dec_uint::<_, u64, _>(input)?;
+    let expected_output = dec_uint(input)?;
     ": ".parse_next(input)?;
     let vec_str = separated(1.., take_while(1.., AsChar::is_dec_digit), " ").parse_next(input)?;
     let _ = opt("\n").parse_next(input)?;
