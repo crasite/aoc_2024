@@ -12,6 +12,8 @@ pub const DAY6TEST: &str = include_str!("./challenge/6t.txt");
 pub const DAY6CHALLENGE: &str = include_str!("./challenge/6c.txt");
 pub const DAY7TEST: &str = include_str!("./challenge/7t.txt");
 pub const DAY7CHALLENGE: &str = include_str!("./challenge/7c.txt");
+pub const DAY8TEST: &str = include_str!("./challenge/8t.txt");
+pub const DAY8CHALLENGE: &str = include_str!("./challenge/8c.txt");
 
 pub const DAY19TEST: &str = include_str!("./challenge/day19test.txt");
 pub const DAY19CHALLENGE: &str = include_str!("./challenge/day19challenge.txt");
